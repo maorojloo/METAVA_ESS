@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-o7226)2nu#yse(vf9a=-t4*ggp&q2!howm#b4(tuu0h4kzuo3_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -52,7 +52,7 @@ REST_FRAMEWORK = {
       ],
 }
 
-AUTH_USER_MODEL = 'mainApp.UserData'
+#AUTH_USER_MODEL = 'mainApp.UserData'
 
 
 SIMPLE_JWT = {
