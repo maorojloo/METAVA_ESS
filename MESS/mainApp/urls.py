@@ -15,6 +15,9 @@ urlpatterns = [
     path('subscribe/',views.addSubscriber,name='addSubscriber'),
     path('getSubs/',views.getSubs,name='getSubs'),
     path('delSubs/',views.delSubs,name='delSubs'),
+    path('sendmailtoallsubs/',views.sendmailtoallsubs,name='sendmailtoallsubs'),
+
+
 
 
 
