@@ -151,16 +151,39 @@ html="""
 def sendmailtoallsubs(request):
     response={}
     subscrubers = models.Subscriber.objects.all()
+
+    totalsubscriber=len(subscrubers)
+    successMail=0
+    failedMail=0
+
+
+
     
     for subscruber in subscrubers:
         try:
+            successMail+=1
             receiver_email=subscruber.email
             Subject="مجله متاوا | METAVA"
             emailresult=sendEmailMethod.sendMail(receiver_email,Subject,html)
             if  emailresult:
                 response[subscruber.email]="ok"
         except:
+            failedMail+=1
             response[subscruber.email]="error"
+
+        totalMail=successMail+failedMail
+        successMailPercent=successMail/totalMail
+        successMailPercent*=100
+
+        response={
+            "total subscribers":totalsubscriber,
+            "toal email":totalMail,
+            "success email":successMail,
+            "failed email":failedMail,
+            "email success percent":successMailPercent,
+
+
+        }
             
     return Response(response)
 
