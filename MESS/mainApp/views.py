@@ -11,8 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from . import email as sendEmailMethod
 import re
-
-
+from multiprocessing import Pool
 
 
 
@@ -35,44 +34,20 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(['POST'])
 def addSubscriber(request):
     response=''
-    html="""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>مجله متاوا</title>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                </head>
-                <body style="background-color: #5fdec9; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5; margin: 0; padding: 0;">
-                    <header style="float: none; background-color: #5fdec9; padding: 10px; ">
-                        <h1 style="font-size: 24px; margin: 0;">مجله متاوا</h1>
-                    </header>
-                    <main style="background-color: #5fdec9; padding: 20px;">
-                        <p>سلام</p>
-                        <p>به سامانه دریافت مجله متاوا خوش امدید</p>
-                        <p>با عرض احترام</p>
-                        <p>امین</p>
-                    </main>
-                    <footer style="background-color: #75e645; padding: 10px; text-align: center;">
-                        <p style="font-size: 12px; margin: 0;">تمام حقوق متوا هست © 2023</p>
-                    </footer>
-                </body>
-                </html>
-        """
+
     try:
         email=request.data["email"]
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
         if re.match(regex, email):
-            if not models.Subscriber.objects.filter(email=email).exists() or True:
+            if not models.Subscriber.objects.filter(email=email).exists() :
                 q=models.Subscriber(email=email)
-                Subject="به متاوا خوش آمدید"
+                
                 receiver_email=email
-                emailresult=sendEmailMethod.sendMail(receiver_email,Subject,html)
+                emailresult=sendEmailMethod.sendMail_new_user(receiver_email)
                 if emailresult:
                     q.save()
                     response={"status":"ok"}
@@ -88,6 +63,7 @@ def addSubscriber(request):
     
     return Response(response)
 
+
 @api_view(['GET'])
 @permission_classes((IsAuthenticated, ))
 def getSubs(request):
@@ -100,7 +76,6 @@ def getSubs(request):
     return Response(Serializer.data)
 
     
-
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def delSubs(request):
@@ -117,78 +92,55 @@ def delSubs(request):
     
     return Response(response)
 
-html="""
 
-<!DOCTYPE html>
-<html>
-   <head>
-      <title>مجله متاوا</title>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   </head>
-   <body style="background-color: #5fdec9; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5; margin: 0; padding: 0;">
-      <header style="float: none; background-color: #5fdec9; padding: 10px; ">
-         <h1 style="font-size: 24px; margin: 0;">مجله متاوا</h1>
-      </header>
-      <main style="background-color: #5fdec9; padding: 20px;">
-         <p>مجله مجله مجله</p>
-         <p>ماهنامه مجله اینههههه</p>
-         <p>با عرض احترام</p>
-         <p>امین</p>
-      </main>
-      <footer style="background-color: #75e645; padding: 10px; text-align: center;">
-         <p style="font-size: 12px; margin: 0;">تمام حقوق متوا هست © 2023</p>
-      </footer>
-   </body>
-</html>
-
-
-    """
-
-
-@api_view(['GET'])
-#@permission_classes((IsAuthenticated, ))
-def sendmailtoallsubs(request):
+def updateDB(paremail):
+    #code goes here...
     response={}
-    subscrubers = models.Subscriber.objects.all()
 
     totalsubscriber=len(subscrubers)
     successMail=0
     failedMail=0
-
-
-
     
+    try:
+        successMail+=1
+        receiver_email=paremail
+        Subject="مجله متاوا | METAVA"
+        emailresult=sendEmailMethod.sendMail(receiver_email,Subject,html)
+        if  emailresult:
+            response[paremail]="ok"
+    except:
+        failedMail+=1
+        response[paremail]="error"
+
+    totalMail=successMail+failedMail
+    successMailPercent=successMail/totalMail
+    successMailPercent*=100
+
+    response={
+        "total subscribers":totalsubscriber,
+        "toal email":totalMail,
+        "success email":successMail,
+        "failed email":failedMail,
+        "email success percent":successMailPercent,
+    }
+    print(str(response))
+    return response
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def sendmailtoallsubs_paraler(request):
+
+    subscrubers = models.Subscriber.objects.all()
+
+    receiver_emails=[]
     for subscruber in subscrubers:
-        try:
-            successMail+=1
-            receiver_email=subscruber.email
-            Subject="مجله متاوا | METAVA"
-            emailresult=sendEmailMethod.sendMail(receiver_email,Subject,html)
-            if  emailresult:
-                response[subscruber.email]="ok"
-        except:
-            failedMail+=1
-            response[subscruber.email]="error"
+        receiver_emails+=[subscruber.email]
 
-        totalMail=successMail+failedMail
-        successMailPercent=successMail/totalMail
-        successMailPercent*=100
-
-        response={
-            "total subscribers":totalsubscriber,
-            "toal email":totalMail,
-            "success email":successMail,
-            "failed email":failedMail,
-            "email success percent":successMailPercent,
-
-
-        }
-            
-    return Response(response)
-
-
+    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails)
     
+    return Response(emailresult)
+
 
 
 
