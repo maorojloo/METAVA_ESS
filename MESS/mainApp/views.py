@@ -65,7 +65,7 @@ def addSubscriber(request):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+#@permission_classes((IsAuthenticated, ))
 def getSubs(request):
     allSubscribers=models.Subscriber.objects.all()
 
@@ -77,7 +77,7 @@ def getSubs(request):
 
     
 @api_view(['POST'])
-@permission_classes((IsAuthenticated, ))
+#@permission_classes((IsAuthenticated, ))
 def delSubs(request):
     id=request.data["id"]
     response=''
@@ -127,17 +127,19 @@ def updateDB(paremail):
     return response
 
 
-@api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@api_view(['POST'])
+#@permission_classes((IsAuthenticated, ))
 def sendmailtoallsubs_paraler(request):
 
     subscrubers = models.Subscriber.objects.all()
 
     receiver_emails=[]
+    Subject=request.data["Subject"]
+    html=request.data["html"]
     for subscruber in subscrubers:
         receiver_emails+=[subscruber.email]
 
-    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails)
+    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,html)
     
     return Response(emailresult)
 
