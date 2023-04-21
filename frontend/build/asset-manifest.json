@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/static/css/main.7023d9a0.css",
+    "main.js": "/static/js/main.7e145f0e.js",
+    "static/js/496.47429c25.chunk.js": "/static/js/496.47429c25.chunk.js",
+    "static/media/PC_POS_Rahnama.pdf": "/static/media/PC_POS_Rahnama.272de8374d4739085d26.pdf",
+    "static/media/PCPOS14.png": "/static/media/PCPOS14.d518b5c7699c0fda4649.png",
+    "static/media/logo_white.png": "/static/media/logo_white.5e6b939194293f55b70e.png",
+    "index.html": "/index.html",
+    "static/media/HSCOpcpos-6.15.exe": "/static/media/HSCOpcpos-6.15.31d6cfe0d16ae931b73c.exe",
+    "main.7023d9a0.css.map": "/static/css/main.7023d9a0.css.map",
+    "main.7e145f0e.js.map": "/static/js/main.7e145f0e.js.map",
+    "496.47429c25.chunk.js.map": "/static/js/496.47429c25.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7023d9a0.css",
+    "static/js/main.7e145f0e.js"
+  ]
+}
