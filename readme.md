@@ -1,1 +1,1 @@
-gunicorn MESS.wsgi --bind 0.0.0.0:8000
+docker compose up -d :)
