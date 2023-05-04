@@ -11,7 +11,7 @@ from itertools import repeat
  
 dotenv_file = os.path.join(settings.BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
-    dotenv.load_dotenv(dotenv_file)
+    dotenv.read_dotenv(dotenv_file)
 
 
 port = os.environ['port']
@@ -20,35 +20,36 @@ login =  os.environ['login']
 password = os.environ['password']
 
 def sendMail(receiver_email,Subject,html):
-   Subject=Subject
+    Subject=Subject
 
-   result={}
-   try:
-      sender_email = "ma.farahbakhsh@srbiau.ac.ir"
-      receiver_email = receiver_email
-      Subject= Subject
-      html = html
+    result={}
+    try:
+        sender_email = login
+        receiver_email = receiver_email
+        Subject= Subject
+        html = html
+        
 
-      message = MIMEMultipart("alternative")
-      message["Subject"] = Subject
-      message["From"] = sender_email
-      message["To"] = receiver_email
+        message = MIMEMultipart("alternative")
+        message["Subject"] = Subject
+        message["From"] = sender_email
+        message["To"] = receiver_email
 
-      part2 = MIMEText(html, "html")
-      message.attach(part2)
+        part2 = MIMEText(html, "html")
+        message.attach(part2)
 
-      with smtplib.SMTP(smtp_server, port) as server:
-         server.login(login, password)
-         server.sendmail(sender_email, receiver_email, message.as_string())
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.login(login, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
 
-      result={
+        result={
          "receiver_email":receiver_email,
          "status":"ok",
       }
-   except:
-      result={
+    except:
+        result={
          "status":"error",
-      }
+        }
 
     message = MIMEMultipart("alternative")
     message["Subject"] = Subject

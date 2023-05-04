@@ -1,18 +1,21 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+#rest framework
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+
+#3rd party
+from multiprocessing import Pool
+import base64
+import re
+
+#local
+from . import email as sendEmailMethod
 from . import serializers
 from . import models
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
-from . import email as sendEmailMethod
-import re
-from multiprocessing import Pool
-
 
 
 class HomeView(APIView):
@@ -20,7 +23,6 @@ class HomeView(APIView):
     def get(self, request):
         content = {'message': 'Welcome to the JWT Authentication page using React Js and Django!'}  
         return Response(content)
-
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -33,7 +35,6 @@ class LogoutView(APIView):
         except Exception as e:               
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
 def addSubscriber(request):
     response=''
@@ -43,11 +44,17 @@ def addSubscriber(request):
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
         if re.match(regex, email):
-            if not models.Subscriber.objects.filter(email=email).exists() :
+            if not models.Subscriber.objects.filter(email=email).exists() or True:
                 q=models.Subscriber(email=email)
-                
-                receiver_email=email
-                emailresult=sendEmailMethod.sendMail_new_user(receiver_email)
+                emailtemplate=models.HtmlTeplates.objects.get(name='newuseremail')
+
+                receiver=email
+                Subject=emailtemplate.Subject
+                htmlEncoded=emailtemplate.htmlEncoded
+
+                emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
+
+
                 if emailresult:
                     q.save()
                     response={"status":"ok"}
@@ -58,11 +65,12 @@ def addSubscriber(request):
         else:
             response={"status":"Invalid Email"}
 
-    except:
-        response={"status":"unknown error during inserting"}
+    except Exception as e:
+        response={"status":"error",
+                    "error":str(e)
+        }
     
     return Response(response)
-
 
 @api_view(['GET'])
 #@permission_classes((IsAuthenticated, ))
@@ -74,7 +82,6 @@ def getSubs(request):
     #content = JSONRenderer().render(serializer.data)
 
     return Response(Serializer.data)
-
     
 @api_view(['POST'])
 #@permission_classes((IsAuthenticated, ))
@@ -92,15 +99,12 @@ def delSubs(request):
     
     return Response(response)
 
-
 def updateDB(paremail):
-    #code goes here...
     response={}
-
     totalsubscriber=len(subscrubers)
     successMail=0
     failedMail=0
-    
+
     try:
         successMail+=1
         receiver_email=paremail
@@ -126,28 +130,44 @@ def updateDB(paremail):
     print(str(response))
     return response
 
-
 @api_view(['POST'])
 #@permission_classes((IsAuthenticated, ))
 def sendmailtoallsubs_paraler(request):
-
     subscrubers = models.Subscriber.objects.all()
-
     receiver_emails=[]
     Subject=request.data["Subject"]
-    html=request.data["html"]
+    #html=request.data["html"]
+    htmlEncoded=request.data["html"]
+    htmlDecoded=base64.b64decode(htmlEncoded).decode('utf-8')
+
     for subscruber in subscrubers:
         receiver_emails+=[subscruber.email]
 
-    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,html)
+    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,htmlDecoded)
     
     return Response(emailresult)
 
+@api_view(['POST'])
+#@permission_classes((IsAuthenticated, ))
+def sendtstmail(request):
+    receiver = request.data["receiver"]
+    Subject=request.data["Subject"]
+    htmlEncoded=request.data["html"]
+    
+    emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
+    return Response(emailresult)
 
 
+def sendSingleMail(receiver,Subject,html):
+    receiver_emails=[]
+    subscruber = receiver
+    receiver_emails.append(subscruber)
+    Subject=Subject
+    htmlEncoded=html
+    htmlDecoded=base64.b64decode(htmlEncoded).decode('utf-8')
+    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,htmlDecoded)
 
-
-
+    return emailresult
 
 
 

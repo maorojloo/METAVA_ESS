@@ -5,3 +5,4 @@ from . import models
 
 
 admin.site.register(models.Subscriber)
+admin.site.register(models.HtmlTeplates)

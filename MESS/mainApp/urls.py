@@ -16,6 +16,7 @@ urlpatterns = [
     path('getSubs/',views.getSubs,name='getSubs'),
     path('delSubs/',views.delSubs,name='delSubs'),
     path('sendmailtoallsubs_paraler/',views.sendmailtoallsubs_paraler,name='sendmailtoallsubs_paraler'),
+    path('sendtstmail/',views.sendtstmail,name='sendtstmail'),
 
 
 
