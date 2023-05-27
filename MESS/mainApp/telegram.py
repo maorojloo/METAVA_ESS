@@ -1,6 +1,7 @@
 import requests
 import os
 import dotenv
+from django.conf import settings
 
 dotenv_file = os.path.join(settings.BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
