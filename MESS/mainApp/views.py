@@ -178,7 +178,7 @@ def sendSingleMail(receiver,Subject,html):
     return Response(emailresult)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def send_db_in_telegram(request,telid):
     telegram_id=telid
 
