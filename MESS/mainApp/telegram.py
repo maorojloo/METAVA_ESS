@@ -21,3 +21,15 @@ def send_msg_to_telegram(message):
     response = requests.post(url, data=data, timeout=timeout_seconds)
 
 
+
+
+def send_file_to_telegram(chat_id,file_path):
+    url = f'https://api.telegram.org/bot{token}/sendDocument'
+
+    files = {'document': open(file_path, 'rb')}
+    data = {'chat_id': chat_id}
+
+    response = requests.post(url, files=files, data=data)
+
+    return response.status_code
+

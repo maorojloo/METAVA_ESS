@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from django.conf import settings
+
 
 #3rd party
 from multiprocessing import Pool
@@ -45,7 +47,7 @@ def addSubscriber(request):
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
         if re.match(regex, email):
-            if not models.Subscriber.objects.filter(email=email).exists() or True:
+            if not models.Subscriber.objects.filter(email=email).exists() or True:#check if this email exsist or not?
                 q=models.Subscriber(email=email)
                 emailtemplate=models.HtmlTeplates.objects.get(name='newuseremail')
 
@@ -59,11 +61,12 @@ def addSubscriber(request):
                 if emailresult:
                     q.save()
                     response={"status":"ok"}
+                    telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
                     #notife me on telegram
-                    try:
-                        telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
-                    except:
-                        pass
+                    # try:
+                    #     telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
+                    # except:
+                    #     pass
                 else:
                     response={"status":"errror in sending invite mail"}    
             else:
@@ -163,7 +166,6 @@ def sendtstmail(request):
     emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
     return Response(emailresult)
 
-
 def sendSingleMail(receiver,Subject,html):
     receiver_emails=[]
     subscruber = receiver
@@ -173,7 +175,20 @@ def sendSingleMail(receiver,Subject,html):
     htmlDecoded=base64.b64decode(htmlEncoded).decode('utf-8')
     emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,htmlDecoded)
 
-    return emailresult
+    return Response(emailresult)
+
+
+@api_view(['POST'])
+def send_db_in_telegram(request):
+    telegram_id=request.data["telegram_id"]
+
+
+    db_dile = os.path.join(settings.BASE_DIR, "db.sqlite3")
+
+    
+    responce=telegram.send_file_to_telegram(chat_id,db_dile)
+
+    return Response({'status':responce})
 
 
 
