@@ -13,6 +13,8 @@ from django.conf import settings
 from multiprocessing import Pool
 import base64
 import re
+import os
+
 
 #local
 from . import email as sendEmailMethod
