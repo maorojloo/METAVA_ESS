@@ -60,7 +60,10 @@ def addSubscriber(request):
                     q.save()
                     response={"status":"ok"}
                     #notife me on telegram
-                    telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
+                    try:
+                        telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
+                    except:
+                        pass
                 else:
                     response={"status":"errror in sending invite mail"}    
             else:
