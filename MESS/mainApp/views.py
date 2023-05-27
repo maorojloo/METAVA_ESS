@@ -180,7 +180,7 @@ def sendSingleMail(receiver,Subject,html):
 
 @api_view(['POST'])
 def send_db_in_telegram(request):
-    telegram_id=request.data["telegram_id"]
+    telegram_id=request.data["telegramid"]
 
 
     db_dile = os.path.join(settings.BASE_DIR, "db.sqlite3")
