@@ -72,27 +72,17 @@ def addSubscriber(request):
                 htmlEncoded=emailtemplate.htmlEncoded
 
                 #send mail to new user
-                # emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
-                # Create a thread for the background function with parameters
-                #background_thread = threading.Thread(sendSingleMail=sendSingleMail, args=(receiver,Subject,htmlEncoded))
                 daemon = Thread(target=sendSingleMail, args=(receiver,Subject,htmlEncoded), daemon=True, name='sendSingleMail_Background')
                 daemon.start()
-                # Start the thread
-                #background_thread.start()
-                # Continue with the rest of your code
 
-
-                if emailresult or True:
-                    q.save()
-                    response={"status":"ok"}
+                q.save()
+                response={"status":"ok"}
+                # notife me on telegram
+                try:
                     telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
-                    #notife me on telegram
-                    # try:
-                    #     telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
-                    # except:
-                    #     pass
-                else:
-                    response={"status":"errror in sending invite mail"}    
+                except:
+                    pass
+  
             else:
                 response={"status":"email already exist"}
         else:
