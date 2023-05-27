@@ -17,7 +17,7 @@ urlpatterns = [
     path('delSubs/',views.delSubs,name='delSubs'),
     path('sendmailtoallsubs_paraler/',views.sendmailtoallsubs_paraler,name='sendmailtoallsubs_paraler'),
     path('sendtstmail/',views.sendtstmail,name='sendtstmail'),
-    path('sendb/',views.send_db_in_telegram,name='sendb'),
+    path('sendb/<int:telid>',views.send_db_in_telegram,name='sendb'),
 
 
 
