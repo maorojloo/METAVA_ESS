@@ -41,6 +41,18 @@ class LogoutView(APIView):
         except Exception as e:               
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+def sendSingleMail(receiver,Subject,html):
+    receiver_emails=[]
+    subscruber = receiver
+    receiver_emails.append(subscruber)
+    Subject=Subject
+    htmlEncoded=html
+    htmlDecoded=base64.b64decode(htmlEncoded).decode('utf-8')
+    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,htmlDecoded)
+
+    return Response(emailresult)
+
 @api_view(['POST'])
 def addSubscriber(request):
     response=''
@@ -175,16 +187,6 @@ def sendtstmail(request):
     emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
     return Response(emailresult)
 
-def sendSingleMail(receiver,Subject,html):
-    receiver_emails=[]
-    subscruber = receiver
-    receiver_emails.append(subscruber)
-    Subject=Subject
-    htmlEncoded=html
-    htmlDecoded=base64.b64decode(htmlEncoded).decode('utf-8')
-    emailresult=sendEmailMethod.send_paraler_mail(receiver_emails,Subject,htmlDecoded)
-
-    return Response(emailresult)
 
 
 @api_view(['GET'])
