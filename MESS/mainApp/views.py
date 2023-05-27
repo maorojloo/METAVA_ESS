@@ -188,7 +188,7 @@ def send_db_in_telegram(request,telid):
     db_dile = os.path.join(settings.BASE_DIR, "db.sqlite3")
 
     
-    responce=telegram.send_file_to_telegram(chat_id,db_dile)
+    responce=telegram.send_file_to_telegram(telegram_id,db_dile)
 
     return Response({'status':responce})
 
