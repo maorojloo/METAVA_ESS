@@ -14,6 +14,7 @@ from multiprocessing import Pool
 import base64
 import re
 import os
+import threading
 
 
 #local
@@ -57,10 +58,16 @@ def addSubscriber(request):
                 Subject=emailtemplate.Subject
                 htmlEncoded=emailtemplate.htmlEncoded
 
-                emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
+                #send mail to new user
+                # emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
+                # Create a thread for the background function with parameters
+                background_thread = threading.Thread(sendSingleMail=background_function, args=(receiver,Subject,htmlEncoded))
+                # Start the thread
+                background_thread.start()
+                # Continue with the rest of your code
 
 
-                if emailresult:
+                if emailresult or True:
                     q.save()
                     response={"status":"ok"}
                     telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
