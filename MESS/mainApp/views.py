@@ -50,7 +50,7 @@ def addSubscriber(request):
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
         if re.match(regex, email):
-            if not models.Subscriber.objects.filter(email=email).exists() :
+            if not models.Subscriber.objects.filter(email=email).exists() or True :
                 q=models.Subscriber(email=email)
                 emailtemplate=models.HtmlTeplates.objects.get(name='newuseremail')
 
@@ -61,7 +61,7 @@ def addSubscriber(request):
                 #send mail to new user
                 # emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
                 # Create a thread for the background function with parameters
-                background_thread = threading.Thread(sendSingleMail=background_function, args=(receiver,Subject,htmlEncoded))
+                background_thread = threading.Thread(sendSingleMail=sendSingleMail, args=(receiver,Subject,htmlEncoded))
                 # Start the thread
                 background_thread.start()
                 # Continue with the rest of your code
