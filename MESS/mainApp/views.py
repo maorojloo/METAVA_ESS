@@ -16,6 +16,7 @@ import re
 from . import email as sendEmailMethod
 from . import serializers
 from . import models
+from . import telegram
 
 
 class HomeView(APIView):
@@ -58,6 +59,8 @@ def addSubscriber(request):
                 if emailresult:
                     q.save()
                     response={"status":"ok"}
+                    #notife me on telegram
+                    telegram.send_msg_to_telegram("new user regrestrd named "+str(email))
                 else:
                     response={"status":"errror in sending invite mail"}    
             else:
