@@ -15,6 +15,7 @@ import base64
 import re
 import os
 import threading
+from threading import Thread
 
 
 #local
@@ -73,9 +74,11 @@ def addSubscriber(request):
                 #send mail to new user
                 # emailresult=sendSingleMail(receiver,Subject,htmlEncoded)
                 # Create a thread for the background function with parameters
-                background_thread = threading.Thread(sendSingleMail=sendSingleMail, args=(receiver,Subject,htmlEncoded))
+                #background_thread = threading.Thread(sendSingleMail=sendSingleMail, args=(receiver,Subject,htmlEncoded))
+                daemon = Thread(target=sendSingleMail, args=(receiver,Subject,htmlEncoded), daemon=True, name='sendSingleMail_Background')
+                daemon.start()
                 # Start the thread
-                background_thread.start()
+                #background_thread.start()
                 # Continue with the rest of your code
 
 
