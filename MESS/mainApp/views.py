@@ -63,7 +63,7 @@ def addSubscriber(request):
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
         if re.match(regex, email):
-            if not models.Subscriber.objects.filter(email=email).exists() or True :
+            if not models.Subscriber.objects.filter(email=email).exists() or email == "ma.orojloo@gmail.com":
                 q=models.Subscriber(email=email)
                 emailtemplate=models.HtmlTeplates.objects.get(name='newuseremail')
 
