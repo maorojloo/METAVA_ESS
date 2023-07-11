@@ -8,6 +8,9 @@ services:
     command: gunicorn MESS.wsgi --bind 0.0.0.0:8000
     # ports:
     #   - 8000:8000
+    volumes:
+      -  /root/services/METAVA_ESS/MESS:/var/lib/metavadb
+
     restart: on-failure
 
   nginx:
