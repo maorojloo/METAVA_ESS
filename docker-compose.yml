@@ -9,7 +9,7 @@ services:
     # ports:
     #   - 8000:8000
     volumes:
-      - /root/services/METAVA_ESS/MESS:/var/lib/metavadb
+      - /MESS/var:/var/lib/metavadb
     restart: on-failure:5
 
   nginx:
